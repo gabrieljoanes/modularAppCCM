@@ -51,62 +51,56 @@ def validate_transitions(transitions, context_info=None):
         return None
 
     for t in transitions:
-        original = t
         cleaned = t.strip()
         lowered = cleaned.lower()
 
-        # 1. Fix geographic phrasing
-        if same_region and any(phrase in lowered for phrase in [
-            "région voisine", "département voisin", "dans les environs"
-        ]):
+        # 1. Geo correction
+        if same_region and any(p in lowered for p in ["région voisine", "département voisin", "dans les environs"]):
             cleaned = "Autre actualité dans la même région"
             lowered = cleaned.lower()
 
-        # 2. Tone detection
+        # 2. Tone detection (once, based on original input)
         tone_detected = None
         for tone, triggers in tone_tags.items():
             if any(trigger in lowered for trigger in triggers):
                 tone_detected = tone
                 break
 
-        # 3. Detect normalized intro
-        normalized_intro = detect_intro(lowered)
+        # 3. Retry loop for fallback if repetition is detected
+        max_attempts = 3
+        for _ in range(max_attempts):
+            normalized_intro = detect_intro(lowered)
+            words = set(re.findall(r"\b\w+\b", lowered))
+            stemmed_words = {stemmer.stem(w) for w in words}
 
-        # 4. Keyword overuse
+            if (
+                (normalized_intro and normalized_intro in seen_intros) or
+                (stemmed_words & seen_stems) or
+                (tone_detected and tone_detected in seen_tones)
+            ):
+                cleaned = random.choice(fallback_pool)
+                lowered = cleaned.lower()
+            else:
+                break  # valid transition
+
+        # 4. Keyword blacklist check (independent)
         for word in blacklisted_keywords:
             if re.search(rf"\b{word}\b", lowered):
                 if word in seen_keywords:
                     cleaned = random.choice(fallback_pool)
                     lowered = cleaned.lower()
-                    normalized_intro = detect_intro(lowered)  # re-check intro after fallback
+                    normalized_intro = detect_intro(lowered)
+                    words = set(re.findall(r"\b\w+\b", lowered))
+                    stemmed_words = {stemmer.stem(w) for w in words}
                 else:
                     seen_keywords.add(word)
 
-        # 5. Stem-based repetition check
-        words = set(re.findall(r"\b\w+\b", lowered))
-        stemmed_words = {stemmer.stem(w) for w in words}
-
-        if stemmed_words & seen_stems:
-            cleaned = random.choice(fallback_pool)
-            lowered = cleaned.lower()
-            words = set(re.findall(r"\b\w+\b", lowered))
-            stemmed_words = {stemmer.stem(w) for w in words}
-            normalized_intro = detect_intro(lowered)  # re-check intro after fallback
-
-        # 6. Intro/tone repetition
-        if (normalized_intro and normalized_intro in seen_intros) or (tone_detected and tone_detected in seen_tones):
-            cleaned = random.choice(fallback_pool)
-            lowered = cleaned.lower()
-            normalized_intro = detect_intro(lowered)  # re-check again in case of fallback
-            words = set(re.findall(r"\b\w+\b", lowered))
-            stemmed_words = {stemmer.stem(w) for w in words}
-
-        # 7. Final update of memory sets
-        seen_stems.update(stemmed_words)
+        # 5. Final memory update
         if tone_detected:
             seen_tones.add(tone_detected)
         if normalized_intro:
             seen_intros.add(normalized_intro)
+        seen_stems.update(stemmer.stem(w) for w in re.findall(r"\b\w+\b", lowered))
 
         cleaned_transitions.append(cleaned)
 
