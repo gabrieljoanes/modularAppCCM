@@ -1,5 +1,9 @@
 import random
 import re
+from nltk.stem.snowball import FrenchStemmer
+
+stemmer = FrenchStemmer()
+
 
 def validate_transitions(transitions, context_info=None):
     """
