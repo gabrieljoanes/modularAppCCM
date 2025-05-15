@@ -12,8 +12,7 @@ client = openai.OpenAI(api_key=st.secrets["openai"]["api_key"])
 def render():
     st.title("🧠 Transition Generator")
     st.markdown("Paste your article with `TRANSITION` markers. We'll insert natural transitions.")
-st.markdown(f"**🧾 Version:** `{get_version()}`")
-
+    st.markdown(f"**🧾 Version:** `{get_version()}`")
     meta_instruction = load_prompt("prompts/transition_meta.txt")
     prompt_template = load_prompt("prompts/transition_prompt.txt")
     examples = sample_shots(load_transitions("assets/transitions.jsonl"), 3)
