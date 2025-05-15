@@ -1,0 +1,7 @@
+# Optional formatting placeholder, currently unused by model but loaded here if needed
+# Example: 
+# Paragraph A:
+# <<<A>>>
+# TRANSITION
+# Paragraph B:
+# <<<B>>>
