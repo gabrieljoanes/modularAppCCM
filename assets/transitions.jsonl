@@ -1,54 +1,13 @@
-[
-  {
-    "input": "Un homme a été tué par balles dans une épicerie à Valréas, un événement tragique qui a choqué cette petite commune.\nTRANSITION\nDeux girafes venues de Suède arriveront au zoo des Sables-d'Olonne pour rejoindre le programme d'élevage européen.",
-    "transition": "Dans l'actualité également,"
-  },
-  {
-    "input": "Le conseil municipal a validé le déplacement du Lidl de Fontenay-le-Comte rue Kléber, avec un projet d’aménagement de la zone.\nTRANSITION\nL’association Apedys 85 organise un ciné-débat autour des troubles DYS et TDAH à La Tranche-sur-Mer.",
-    "transition": "Dans un tout autre registre,"
-  },
-  {
-    "input": "Un ciné-débat est prévu par l’Apedys 85 autour des troubles DYS.\nTRANSITION\nÀ Soullans, un concert caritatif rend hommage à Quentin Yvernogeau, décédé d’un lymphome rare.",
-    "transition": "Enfin, signalons que"
-  },
-  {
-    "input": "La Fête de l’asperge à Alzonne a permis de découvrir des produits originaux malgré une météo défavorable.\nTRANSITION\nLa situation hydrologique s’améliore dans la région de la Ganguise et de Montbel, avec des réserves d’eau presque pleines.",
-    "transition": "Dans un autre registre,"
-  },
-  {
-    "input": "Les réserves d’eau de la Ganguise et de Montbel ont atteint 90 % de remplissage, rassurant les agriculteurs.\nTRANSITION\nDes dizaines d’écoles de danse présenteront 136 chorégraphies à Castelnaudary lors d’un concours national.",
-    "transition": "Prenons la direction de la région de [lieu ou territoire], où"
-  },
-  {
-    "input": "Les préparatifs sont en cours pour un concours de danse accueillant plus de 30 écoles à Castelnaudary.\nTRANSITION\nUn jury évaluera les prestations selon la progression des élèves, dans un esprit bienveillant et festif.",
-    "transition": "Enfin, place à la [édition] du concours chorégraphique de [nom de l'événement], qui"
-  },
-  {
-    "input": "Une femme de 22 ans s’est immolée à Nœux-les-Mines. Elle a été transportée en urgence au CHR de Lille.\nTRANSITION\nUne vente aux enchères de sacs de luxe aura lieu au palais des congrès du Touquet-Paris-Plage le 10 mai.",
-    "transition": "Dans un tout autre registre,"
-  },
-  {
-    "input": "Une vente de mode prestigieuse est prévue au Touquet.\nTRANSITION\nUn nouveau complexe sportif est en construction à Houdain, portant le nom de Gervais Martel.",
-    "transition": "Dans l'actualité sportive, sachez que"
-  },
-  {
-    "input": "Un centre sportif de 3 millions d’euros est en chantier à Houdain.\nTRANSITION\nUn incendie a détruit des tonnes de métaux à l’entreprise Artois Métaux à Saint-Laurent-Blangy.",
-    "transition": "Enfin, nous apprenons que"
-  },
-  {
-    "input": "Les piscines en plein air rouvrent progressivement dans le Pays basque pour la saison estivale.\nTRANSITION\nLe circuit Bellevue de Villefranque accueillera le classique de printemps du championnat Corac.",
-    "transition": "Dans un autre registre, on apprend que"
-  },
-  {
-    "input": "Le championnat Corac se déroulera à Villefranque avec plus de 100 coureurs.\nTRANSITION\nLe Groupe philatélique béarnais organise une exposition pour la Fête de l'Europe à Billère.",
-    "transition": "Si vous préférez des activités plus calmes, sachez que"
-  },
-  {
-    "input": "Le club philatélique de Pau prépare son centenaire avec une exposition à Billère.\nTRANSITION\nLa grande fête des ikastolas, Herri Urrats, aura lieu le 11 mai autour du lac de Saint-Pée-sur-Nivelle.",
-    "transition": "Enfin, signalons que"
-  },
-  {
-    "input": "Le festival Visa pour l'image de Perpignan mettra à l'honneur des reportages sur les conflits et l'environnement.\nTRANSITION\nÀ Oreilla, un petit village des Pyrénées, l’alimentation en eau potable est gravement perturbée.",
-    "transition": "Dans un autre registre, on apprend que"
-  }
-]
+{"input": "Un homme a été tué par balles dans une épicerie à Valréas, un événement tragique qui a choqué cette petite commune.\nTRANSITION\nDeux girafes venues de Suède arriveront au zoo des Sables-d'Olonne pour rejoindre le programme d'élevage européen.", "transition": "Dans l'actualité également,"}
+{"input": "Le conseil municipal a validé le déplacement du Lidl de Fontenay-le-Comte rue Kléber, avec un projet d’aménagement de la zone.\nTRANSITION\nL’association Apedys 85 organise un ciné-débat autour des troubles DYS et TDAH à La Tranche-sur-Mer.", "transition": "Dans un tout autre registre,"}
+{"input": "Un ciné-débat est prévu par l’Apedys 85 autour des troubles DYS.\nTRANSITION\nÀ Soullans, un concert caritatif rend hommage à Quentin Yvernogeau, décédé d’un lymphome rare.", "transition": "Enfin, signalons que"}
+{"input": "La Fête de l’asperge à Alzonne a permis de découvrir des produits originaux malgré une météo défavorable.\nTRANSITION\nLa situation hydrologique s’améliore dans la région de la Ganguise et de Montbel, avec des réserves d’eau presque pleines.", "transition": "Dans un autre registre,"}
+{"input": "Les réserves d’eau de la Ganguise et de Montbel ont atteint 90 % de remplissage, rassurant les agriculteurs.\nTRANSITION\nDes dizaines d’écoles de danse présenteront 136 chorégraphies à Castelnaudary lors d’un concours national.", "transition": "Prenons la direction de la région de [lieu ou territoire], où"}
+{"input": "Les préparatifs sont en cours pour un concours de danse accueillant plus de 30 écoles à Castelnaudary.\nTRANSITION\nUn jury évaluera les prestations selon la progression des élèves, dans un esprit bienveillant et festif.", "transition": "Enfin, place à la [édition] du concours chorégraphique de [nom de l'événement], qui"}
+{"input": "Une femme de 22 ans s’est immolée à Nœux-les-Mines. Elle a été transportée en urgence au CHR de Lille.\nTRANSITION\nUne vente aux enchères de sacs de luxe aura lieu au palais des congrès du Touquet-Paris-Plage le 10 mai.", "transition": "Dans un tout autre registre,"}
+{"input": "Une vente de mode prestigieuse est prévue au Touquet.\nTRANSITION\nUn nouveau complexe sportif est en construction à Houdain, portant le nom de Gervais Martel.", "transition": "Dans l'actualité sportive, sachez que"}
+{"input": "Un centre sportif de 3 millions d’euros est en chantier à Houdain.\nTRANSITION\nUn incendie a détruit des tonnes de métaux à l’entreprise Artois Métaux à Saint-Laurent-Blangy.", "transition": "Enfin, nous apprenons que"}
+{"input": "Les piscines en plein air rouvrent progressivement dans le Pays basque pour la saison estivale.\nTRANSITION\nLe circuit Bellevue de Villefranque accueillera le classique de printemps du championnat Corac.", "transition": "Dans un autre registre, on apprend que"}
+{"input": "Le championnat Corac se déroulera à Villefranque avec plus de 100 coureurs.\nTRANSITION\nLe Groupe philatélique béarnais organise une exposition pour la Fête de l'Europe à Billère.", "transition": "Si vous préférez des activités plus calmes, sachez que"}
+{"input": "Le club philatélique de Pau prépare son centenaire avec une exposition à Billère.\nTRANSITION\nLa grande fête des ikastolas, Herri Urrats, aura lieu le 11 mai autour du lac de Saint-Pée-sur-Nivelle.", "transition": "Enfin, signalons que"}
+{"input": "Le festival Visa pour l'image de Perpignan mettra à l'honneur des reportages sur les conflits et l'environnement.\nTRANSITION\nÀ Oreilla, un petit village des Pyrénées, l’alimentation en eau potable est gravement perturbée.", "transition": "Dans un autre registre, on apprend que"}
