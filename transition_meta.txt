@@ -18,3 +18,4 @@ Your transitions should be:
 - Distinct in structure
 - Neutral and journalistic
 - Adapted to the subject and tone of each pair of paragraphs
+do not repeat the word ailleurs twice in the output
