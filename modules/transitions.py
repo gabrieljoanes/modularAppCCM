@@ -1,3 +1,4 @@
+from utils.version import get_version
 import streamlit as st
 import openai
 from utils.file_io import load_prompt, load_transitions, sample_shots
@@ -11,6 +12,7 @@ client = openai.OpenAI(api_key=st.secrets["openai"]["api_key"])
 def render():
     st.title("🧠 Transition Generator")
     st.markdown("Paste your article with `TRANSITION` markers. We'll insert natural transitions.")
+st.markdown(f"**🧾 Version:** `{get_version()}`")
 
     meta_instruction = load_prompt("prompts/transition_meta.txt")
     prompt_template = load_prompt("prompts/transition_prompt.txt")
