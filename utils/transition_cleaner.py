@@ -6,14 +6,21 @@ stemmer = FrenchStemmer()
 def clean_transitions(transitions):
     seen_prefixes = set()
     autre_used = False
+    par_ailleurs_used = False
     cleaned = []
 
     for t in transitions:
-        t_lower = t.lower()
-        intro = " ".join(t.split()[:4])
-        intro_clean = re.sub(r'[^\w\s]', '', intro.lower())
+        t_lower = t.lower().strip()
 
-        # Rule: block multiple "autre" usage
+        # Rule: prevent "par ailleurs" repetition
+        if "par ailleurs" in t_lower:
+            if par_ailleurs_used:
+                cleaned.append("[REPETITION: 'par ailleurs' already used]")
+                continue
+            else:
+                par_ailleurs_used = True
+
+        # Rule: prevent more than one use of "autre"
         if "autre" in t_lower:
             if autre_used:
                 cleaned.append("[REPETITION: 'autre' already used]")
@@ -21,9 +28,11 @@ def clean_transitions(transitions):
             else:
                 autre_used = True
 
-        # Rule: block exact prefix reuse
+        # Rule: prevent repeated intros (based on first 4 words)
+        intro = " ".join(t.split()[:4])
+        intro_clean = re.sub(r'[^\w\s]', '', intro.lower())
         if intro_clean in seen_prefixes:
-            cleaned.append("[REPETITION: Replace manually]")
+            cleaned.append("[REPETITION: intro already used]")
         else:
             seen_prefixes.add(intro_clean)
             cleaned.append(t)
