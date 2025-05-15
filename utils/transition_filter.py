@@ -31,10 +31,11 @@ def validate_transitions(transitions, context_info=None):
 
     blacklisted_keywords = ["sujet", "actualité", "thème"]
 
+    # All known intro phrases to block on repetition
     common_intro_phrases = [
         "par ailleurs", "changeons de sujet", "sur un autre sujet",
         "abordons maintenant", "dans un autre registre", "passons à",
-        "dans le cadre", "du côté", "dans un contexte"
+        "dans le cadre", "du côté", "dans un contexte", "notons que"
     ]
 
     same_region = context_info.get("same_region", True) if context_info else True
@@ -43,24 +44,30 @@ def validate_transitions(transitions, context_info=None):
         cleaned = t.strip()
         lowered = cleaned.lower()
 
-        # 1. Conditional geo fix: only clean if context says we're in the same region
+        # 1. Conditional geo fix
         if same_region and any(phrase in lowered for phrase in [
             "région voisine", "département voisin", "dans les environs"
         ]):
             cleaned = "Autre actualité dans la même région"
+            lowered = cleaned.lower()  # reset after change
 
         # 2. Tone detection
         tone_detected = None
         for tone, triggers in tone_tags.items():
-            if any(phrase in lowered for phrase in triggers):
+            if any(trigger in lowered for trigger in triggers):
                 tone_detected = tone
                 break
 
-        # 3. Start phrase normalization (e.g., "par ailleurs du..." and "par ailleurs dans..." count as "par ailleurs")
-        normalized_intro = next((phrase for phrase in common_intro_phrases if lowered.startswith(phrase)), None)
+        # 3. Detect repeated stylistic intros (e.g., any "par ailleurs" variant)
+        normalized_intro = None
+        for phrase in common_intro_phrases:
+            if re.match(rf"^{re.escape(phrase)}([,:\s]|$)", lowered):
+                normalized_intro = phrase
+                break
 
         if (normalized_intro in seen_starts) or (tone_detected and tone_detected in seen_tones):
             cleaned = random.choice(fallback_pool)
+            lowered = cleaned.lower()  # update lowered again after fallback
 
         if normalized_intro:
             seen_starts.add(normalized_intro)
@@ -68,11 +75,12 @@ def validate_transitions(transitions, context_info=None):
         if tone_detected:
             seen_tones.add(tone_detected)
 
-        # 4. Keyword overuse (e.g., "sujet")
+        # 4. Block overused nouns (e.g., "sujet")
         for word in blacklisted_keywords:
-            if re.search(rf"\b{word}\b", cleaned):
+            if re.search(rf"\b{word}\b", lowered):
                 if word in seen_keywords:
                     cleaned = random.choice(fallback_pool)
+                    lowered = cleaned.lower()
                 else:
                     seen_keywords.add(word)
 
