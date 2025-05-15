@@ -4,7 +4,6 @@ from nltk.stem.snowball import FrenchStemmer
 
 stemmer = FrenchStemmer()
 
-
 def validate_transitions(transitions, context_info=None):
     """
     Validates transitions to remove:
@@ -12,12 +11,13 @@ def validate_transitions(transitions, context_info=None):
     - repeated openings (normalized or otherwise)
     - duplicate tones
     - overuse of key words like 'sujet'
-    - any repeated word across transitions
+    - any repeated word or root across transitions (stemmed)
     """
 
-    seen_words = set()
+    seen_stems = set()
     seen_tones = set()
     seen_keywords = set()
+    seen_intros = set()
     cleaned_transitions = []
 
     fallback_pool = [
@@ -44,6 +44,12 @@ def validate_transitions(transitions, context_info=None):
 
     same_region = context_info.get("same_region", True) if context_info else True
 
+    def detect_intro(text):
+        for phrase in common_intro_phrases:
+            if re.match(rf"^{re.escape(phrase)}([,:\s]|$)", text):
+                return phrase
+        return None
+
     for t in transitions:
         original = t
         cleaned = t.strip()
@@ -63,12 +69,8 @@ def validate_transitions(transitions, context_info=None):
                 tone_detected = tone
                 break
 
-        # 3. Normalized intro detection
-        normalized_intro = None
-        for phrase in common_intro_phrases:
-            if re.match(rf"^{re.escape(phrase)}([,:\s]|$)", lowered):
-                normalized_intro = phrase
-                break
+        # 3. Detect normalized intro
+        normalized_intro = detect_intro(lowered)
 
         # 4. Keyword overuse
         for word in blacklisted_keywords:
@@ -76,30 +78,36 @@ def validate_transitions(transitions, context_info=None):
                 if word in seen_keywords:
                     cleaned = random.choice(fallback_pool)
                     lowered = cleaned.lower()
+                    normalized_intro = detect_intro(lowered)  # re-check intro after fallback
                 else:
                     seen_keywords.add(word)
 
-  # 5. Global stem-based repetition check
-words = set(re.findall(r"\b\w+\b", lowered))
-stemmed_words = {stemmer.stem(w) for w in words}
-overlap = stemmed_words & seen_words
-if overlap:
-    cleaned = random.choice(fallback_pool)
-    lowered = cleaned.lower()
-    words = set(re.findall(r"\b\w+\b", lowered))
-    stemmed_words = {stemmer.stem(w) for w in words}
+        # 5. Stem-based repetition check
+        words = set(re.findall(r"\b\w+\b", lowered))
+        stemmed_words = {stemmer.stem(w) for w in words}
 
-seen_words.update(stemmed_words)
+        if stemmed_words & seen_stems:
+            cleaned = random.choice(fallback_pool)
+            lowered = cleaned.lower()
+            words = set(re.findall(r"\b\w+\b", lowered))
+            stemmed_words = {stemmer.stem(w) for w in words}
+            normalized_intro = detect_intro(lowered)  # re-check intro after fallback
 
+        # 6. Intro/tone repetition
+        if (normalized_intro and normalized_intro in seen_intros) or (tone_detected and tone_detected in seen_tones):
+            cleaned = random.choice(fallback_pool)
+            lowered = cleaned.lower()
+            normalized_intro = detect_intro(lowered)  # re-check again in case of fallback
+            words = set(re.findall(r"\b\w+\b", lowered))
+            stemmed_words = {stemmer.stem(w) for w in words}
 
-        # Add seen tone, intro, and words
+        # 7. Final update of memory sets
+        seen_stems.update(stemmed_words)
         if tone_detected:
             seen_tones.add(tone_detected)
-
         if normalized_intro:
-            seen_words.update(normalized_intro.split())
+            seen_intros.add(normalized_intro)
 
-        seen_words.update(words)
         cleaned_transitions.append(cleaned)
 
     return cleaned_transitions
