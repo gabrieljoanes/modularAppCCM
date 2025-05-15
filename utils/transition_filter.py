@@ -9,7 +9,7 @@ def validate_transitions(transitions, context_info=None):
     Validates transitions to remove:
     - repeated intros (e.g. "Par ailleurs")
     - repeated tones
-    - repeated stemmed words
+    - repeated stemmed words (e.g. "maintenant", "passons")
     - overused keywords
     - unsafe fallback reuse
     """
@@ -36,7 +36,6 @@ def validate_transitions(transitions, context_info=None):
 
     blacklisted_keywords = ["sujet", "actualité", "thème"]
 
-    # Known intros to block repetition
     common_intro_phrases = [
         "par ailleurs", "parallèlement", "changeons de sujet", "sur un autre sujet",
         "abordons maintenant", "dans un autre registre", "passons à",
@@ -53,12 +52,12 @@ def validate_transitions(transitions, context_info=None):
         return None
 
     def safe_fallback(seen_intros):
-        for _ in range(10):  # try 10 times to avoid infinite loops
+        for _ in range(10):  # Try 10 times to avoid repeated intros
             fallback = random.choice(fallback_pool)
             intro = detect_intro(fallback)
             if intro is None or intro not in seen_intros:
                 return fallback
-        return "Autre actualité dans la région,"  # final resort fallback
+        return "Autre actualité dans la région,"
 
     for t in transitions:
         cleaned = t.strip()
@@ -90,9 +89,9 @@ def validate_transitions(transitions, context_info=None):
             ):
                 cleaned = safe_fallback(seen_intros)
                 lowered = cleaned.lower()
-                tone_detected = None
+                tone_detected = None  # Fallbacks shouldn't carry over prior tone
             else:
-                break  # valid transition
+                break
 
         # 4. Blacklisted keyword enforcement
         for word in blacklisted_keywords:
@@ -103,13 +102,24 @@ def validate_transitions(transitions, context_info=None):
                 else:
                     seen_keywords.add(word)
 
-        # 5. Final memory updates
+        # 5. Final stem-level repetition check
         final_intro = detect_intro(lowered)
+        final_words = set(re.findall(r"\b\w+\b", lowered))
+        final_stems = {stemmer.stem(w) for w in final_words}
+
+        if final_stems & seen_stems:
+            cleaned = "Autre fait notable dans la région,"
+            lowered = cleaned.lower()
+            final_intro = detect_intro(lowered)
+            final_words = set(re.findall(r"\b\w+\b", lowered))
+            final_stems = {stemmer.stem(w) for w in final_words}
+
+        # 6. Update seen sets and save result
         if final_intro:
             seen_intros.add(final_intro)
         if tone_detected:
             seen_tones.add(tone_detected)
-        seen_stems.update(stemmer.stem(w) for w in re.findall(r"\b\w+\b", lowered))
+        seen_stems.update(final_stems)
 
         cleaned_transitions.append(cleaned)
 
