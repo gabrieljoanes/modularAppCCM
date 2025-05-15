@@ -1,6 +1,7 @@
 import streamlit as st
 import openai
 from utils.file_io import load_prompt, load_transitions, sample_shots
+from utils.transition_filter import validate_transitions  # ✅ NEW IMPORT
 
 # Initialize OpenAI client with API key
 client = openai.OpenAI(api_key=st.secrets["openai"]["api_key"])
@@ -38,6 +39,12 @@ def render():
                 ],
                 max_tokens=1000
             )
-            output = response.choices[0].message.content
+
+            raw_output = response.choices[0].message.content
+            # 🔍 Attempt to split into lines (assumes each transition on a new line)
+            lines = [line.strip() for line in raw_output.split("\n") if line.strip()]
+            filtered = validate_transitions(lines)
+            final_output = "\n".join(filtered)
+
             st.markdown("### 🪄 Output")
-            st.text_area("Generated Output", output, height=300)
+            st.text_area("Generated Output", final_output, height=300)
