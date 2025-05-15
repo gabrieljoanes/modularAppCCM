@@ -4,11 +4,13 @@ import re
 def validate_transitions(transitions, context_info=None):
     """
     Validates transitions to remove:
-    - misleading phrasing
-    - repeated opening phrases
+    - misleading geographic phrases
+    - repeated openings
     - duplicate tones
-    - overuse of key nouns like 'sujet'
+    - overuse of key words like 'sujet'
+    Assumes same-region context by default.
     """
+
     seen_starts = set()
     seen_tones = set()
     seen_keywords = set()
@@ -34,9 +36,11 @@ def validate_transitions(transitions, context_info=None):
         cleaned = t.strip()
         lowered = cleaned.lower()
 
-        # 1. Fix misleading geography
-        if "dans le département voisin" in lowered or "dans les environs" in lowered:
-            cleaned = "Autre actualité dans le même département"
+        # 1. Automatically fix misleading regional geography
+        if any(phrase in lowered for phrase in [
+            "région voisine", "département voisin", "dans les environs"
+        ]):
+            cleaned = "Autre actualité dans la même région"
 
         # 2. Tone detection
         tone_detected = None
@@ -54,9 +58,9 @@ def validate_transitions(transitions, context_info=None):
         if tone_detected:
             seen_tones.add(tone_detected)
 
-        # 4. Overuse of key nouns like "sujet"
+        # 4. Overuse of common anchor nouns
         for word in blacklisted_keywords:
-            if re.search(rf"\\b{word}\\b", cleaned.lower()):
+            if re.search(rf"\\b{word}\\b", cleaned):
                 if word in seen_keywords:
                     cleaned = random.choice(fallback_pool)
                 else:
