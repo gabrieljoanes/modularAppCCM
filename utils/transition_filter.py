@@ -5,7 +5,7 @@ def validate_transitions(transitions, context_info=None):
     """
     Validates transitions to remove:
     - misleading geographic phrases (if same_region is True)
-    - repeated openings
+    - repeated openings (including normalized journalistic phrases)
     - duplicate tones
     - overuse of key words like 'sujet'
     """
@@ -31,6 +31,12 @@ def validate_transitions(transitions, context_info=None):
 
     blacklisted_keywords = ["sujet", "actualité", "thème"]
 
+    common_intro_phrases = [
+        "par ailleurs", "changeons de sujet", "sur un autre sujet",
+        "abordons maintenant", "dans un autre registre", "passons à",
+        "dans le cadre", "du côté", "dans un contexte"
+    ]
+
     same_region = context_info.get("same_region", True) if context_info else True
 
     for t in transitions:
@@ -50,18 +56,21 @@ def validate_transitions(transitions, context_info=None):
                 tone_detected = tone
                 break
 
-        # 3. Start phrase duplication
-        start_key = " ".join(lowered.split()[:3])
-        if start_key in seen_starts or (tone_detected and tone_detected in seen_tones):
+        # 3. Start phrase normalization (e.g., "par ailleurs du..." and "par ailleurs dans..." count as "par ailleurs")
+        normalized_intro = next((phrase for phrase in common_intro_phrases if lowered.startswith(phrase)), None)
+
+        if (normalized_intro in seen_starts) or (tone_detected and tone_detected in seen_tones):
             cleaned = random.choice(fallback_pool)
 
-        seen_starts.add(start_key)
+        if normalized_intro:
+            seen_starts.add(normalized_intro)
+
         if tone_detected:
             seen_tones.add(tone_detected)
 
         # 4. Keyword overuse (e.g., "sujet")
         for word in blacklisted_keywords:
-            if re.search(rf"\\b{word}\\b", cleaned):
+            if re.search(rf"\b{word}\b", cleaned):
                 if word in seen_keywords:
                     cleaned = random.choice(fallback_pool)
                 else:
