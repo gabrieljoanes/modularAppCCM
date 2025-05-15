@@ -79,13 +79,18 @@ def validate_transitions(transitions, context_info=None):
                 else:
                     seen_keywords.add(word)
 
-        # 5. Global word-level repetition check
-        words = set(re.findall(r"\b\w+\b", lowered))
-        overlap = words & seen_words
-        if overlap:
-            cleaned = random.choice(fallback_pool)
-            lowered = cleaned.lower()
-            words = set(re.findall(r"\b\w+\b", lowered))  # Recalculate for fallback
+  # 5. Global stem-based repetition check
+words = set(re.findall(r"\b\w+\b", lowered))
+stemmed_words = {stemmer.stem(w) for w in words}
+overlap = stemmed_words & seen_words
+if overlap:
+    cleaned = random.choice(fallback_pool)
+    lowered = cleaned.lower()
+    words = set(re.findall(r"\b\w+\b", lowered))
+    stemmed_words = {stemmer.stem(w) for w in words}
+
+seen_words.update(stemmed_words)
+
 
         # Add seen tone, intro, and words
         if tone_detected:
