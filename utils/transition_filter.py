@@ -1,34 +1,48 @@
 def validate_transitions(transitions, context_info=None):
     """
-    Validates and filters transitions to avoid false geographic or contextual links
-    and repeated phrasing within a single article.
+    Validates and filters transitions to avoid:
+    - misleading geography
+    - repeated phrasing
+    - excessive tone similarity
 
-    Parameters:
-    - transitions: list of transition strings
-    - context_info: optional dictionary with known location or topic metadata
-
-    Returns:
-    - list of validated transitions (cleaned and de-duplicated)
+    Returns a cleaned list of transitions.
     """
-    seen = set()
-    replacements = []
+    seen_prefixes = set()
+    seen_tones = set()
+    cleaned_transitions = []
 
     for t in transitions:
         cleaned = t.strip()
-
-        # Check for geographic misleading phrasing
         lowered = cleaned.lower()
+
+        # Rule 1: Geography cleanup
         if "dans le département voisin" in lowered:
             cleaned = "Autre actualité dans le même département"
         elif "par ailleurs" in lowered and "voisin" in lowered:
             cleaned = "Dans un autre registre local"
 
-        # Check for repeated phrases (especially first 3–5 words)
-        base_key = " ".join(cleaned.lower().split()[:4])  # identify by prefix
-        if base_key in seen:
-            cleaned = "Dans un autre domaine de l’actualité,"
-        seen.add(base_key)
+        # Rule 2: Detect repetitive tone (semantic variants)
+        tone_tags = {
+            "optimiste": ["plus positive", "note plus légère", "bonne nouvelle", "actualité réjouissante"],
+            "changement": ["changeons de sujet", "passons à", "sur un autre sujet", "dans un autre registre"],
+        }
+        tone_detected = None
+        for tone, triggers in tone_tags.items():
+            for phrase in triggers:
+                if phrase in lowered:
+                    tone_detected = tone
+                    break
+            if tone_detected:
+                break
 
-        replacements.append(cleaned)
+        # Rule 3: Block repetition by prefix or semantic tone
+        prefix_key = " ".join(lowered.split()[:4])
+        if prefix_key in seen_prefixes or (tone_detected and tone_detected in seen_tones):
+            cleaned = "Par ailleurs, un autre fait marquant mérite l'attention,"
+        seen_prefixes.add(prefix_key)
+        if tone_detected:
+            seen_tones.add(tone_detected)
 
-    return replacements
+        cleaned_transitions.append(cleaned)
+
+    return cleaned_transitions
