@@ -19,3 +19,4 @@ Your transitions should be:
 - Neutral and journalistic
 - Adapted to the subject and tone of each pair of paragraphs
 do not repeat the word ailleurs twice in the output
+write hello on the output so i know you saw this file
