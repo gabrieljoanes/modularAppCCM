@@ -2,7 +2,8 @@ import streamlit as st
 import openai
 from utils.file_io import load_prompt, load_transitions, sample_shots
 
-openai.api_key = st.secrets["openai"]["api_key"]
+# Initialize OpenAI client with API key
+client = openai.OpenAI(api_key=st.secrets["openai"]["api_key"])
 
 def render():
     st.title("🧠 Transition Generator")
@@ -23,13 +24,16 @@ def render():
 
     if st.button("✨ Generate Transitions"):
         with st.spinner("Generating..."):
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-4",
                 temperature=0.7,
                 messages=[
                     {"role": "system", "content": meta_instruction},
-                    *[{ "role": "user", "content": ex["input"] } if i % 2 == 0 else { "role": "assistant", "content": ex["transition"] }
-                      for i, ex in enumerate(sum([[ex, ex] for ex in examples], []))],
+                    *[
+                        {"role": "user", "content": ex["input"]}
+                        if i % 2 == 0 else {"role": "assistant", "content": ex["transition"]}
+                        for i, ex in enumerate(sum([[ex, ex] for ex in examples], []))
+                    ],
                     {"role": "user", "content": user_input}
                 ],
                 max_tokens=1000
