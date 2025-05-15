@@ -1,5 +1,5 @@
-### Premier paragraphe :
+Complétez ce texte en remplaçant le mot "TRANSITION" par une phrase de transition journalistique (5 à 10 mots), neutre et contextuelle, qui relie naturellement les deux paragraphes.
+
 {paragraph_a}
 TRANSITION
-### Deuxième paragraphe :
 {paragraph_b}
