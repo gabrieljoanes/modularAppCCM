@@ -1,7 +1,5 @@
-# Optional formatting placeholder, currently unused by model but loaded here if needed
-# Example: 
-# Paragraph A:
-# <<<A>>>
-# TRANSITION
-# Paragraph B:
-# <<<B>>>
+Complétez ce texte en remplaçant le mot "TRANSITION" par une phrase de transition journalistique (5 à 10 mots), neutre et contextuelle, qui relie naturellement les deux paragraphes.
+
+{paragraph_a}
+TRANSITION
+{paragraph_b}
